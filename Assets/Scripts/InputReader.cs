@@ -1,10 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class InputReader : MonoBehaviour
 {
+    private const int FireButton = 0;
+    
     [SerializeField] private LayerMask _layerMask;
+
+    public event Action<Cube> CubeClicked;
     
     private Camera _camera;
 
@@ -15,7 +20,7 @@ public class InputReader : MonoBehaviour
     
     private void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(FireButton))
             MouseClick();
     }
 
@@ -26,9 +31,9 @@ public class InputReader : MonoBehaviour
         {
             GameObject hitObject = hit.collider.gameObject;
 
-            if (hitObject.TryGetComponent(out CubeExplosive cubeExplosive))
+            if (hitObject.TryGetComponent(out Cube cubeExplosive))
             {
-                cubeExplosive.Explode();
+                CubeClicked?.Invoke(cubeExplosive);
             }
         }
     }
