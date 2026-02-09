@@ -12,23 +12,23 @@ public class CubeSpawner : MonoBehaviour
     [SerializeField] private int _minSpawnCubes;
     [SerializeField] private int _maxSpawnCudes;
     
-    [SerializeField] private InputReader _inputReader;
-    [SerializeField] private CubeExploder _cubeExploder;
-    
-    private void OnEnable()
+    public bool TrySpawnCubes(Cube cube, out Cube[] childCubes)
     {
-        _inputReader.CubeClicked += OnCubeClicked;
-    }
-
-    private void OnCubeClicked(Cube cube)
-    {
-        if (UtilsRandom.CheckChance(cube.CubesSpawnChance))
-            SpawnCubes(cube);
-        else
-            Destroy(cube.gameObject);
+        childCubes = null;
+        
+        if (UtilsRandom.TryChance(cube.CubesSpawnChance))
+        {
+            childCubes = SpawnCubes(cube);
+            
+            return true;
+        }
+        
+        Destroy(cube.gameObject);
+        
+        return false;
     }
     
-    private void SpawnCubes(Cube cube)
+    private Cube[] SpawnCubes(Cube cube)
     {
         int cubesToSpawn = UtilsRandom.GetRandomNumber(_minSpawnCubes, _maxSpawnCudes);
         
@@ -42,9 +42,8 @@ public class CubeSpawner : MonoBehaviour
 
             cubes[i] = childCube;
         }
-        
-        Destroy(cube.gameObject);
-        _cubeExploder.ApplyExplosion(cube.transform, cubes);
+
+        return cubes;
     }
     
     private Vector3[] GetSpawnPositions(Transform cubeTransform)
@@ -61,10 +60,5 @@ public class CubeSpawner : MonoBehaviour
         positions[5] = position + (Vector3.down * (ChildScale * parentScale));
 
         return positions;
-    }
-    
-    private void OnDisable()
-    {
-        _inputReader.CubeClicked -= OnCubeClicked;
     }
 }

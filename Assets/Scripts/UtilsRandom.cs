@@ -5,9 +5,9 @@ using UnityEngine;
 
 public static class UtilsRandom
 {
-    static private System.Random s_random = new System.Random();
+    private static System.Random s_random = new System.Random();
 
-    static public bool CheckChance(float chance)
+    public static bool TryChance(float chance)
     {
         if (s_random.NextDouble() <= chance)
             return true;
@@ -15,12 +15,12 @@ public static class UtilsRandom
         return false;
     }
 
-    static public int GetRandomNumber(int min, int max)
+    public static int GetRandomNumber(int min, int max)
     {
         return s_random.Next(min, max + 1);
     }
 
-    static public Color GetRandomColor()
+    public static Color GetRandomColor()
     {
         float r = Convert.ToSingle(s_random.NextDouble());
         float g = Convert.ToSingle(s_random.NextDouble());

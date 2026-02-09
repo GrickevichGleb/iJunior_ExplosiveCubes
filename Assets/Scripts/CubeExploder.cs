@@ -10,10 +10,14 @@ public class CubeExploder : MonoBehaviour
     [SerializeField] private float _explosionRadius = 3f;
     [SerializeField] private float _explosionUpwardsModif = 0.8f;
     
-    public void ApplyExplosion(Transform parentCube, Cube[] childrenCubes)
+    public void ApplyExplosion(GameObject parentCube, Cube[] childrenCubes)
     {
-        Vector3 explosionPosition = parentCube.position - (Vector3.up * (parentCube.localScale.x * DefaultSideBias));
+        Transform parentCubeTransform = parentCube.transform;
+        Vector3 explosionPosition = 
+            parentCubeTransform.position - (Vector3.up * (parentCubeTransform.localScale.x * DefaultSideBias));
 
+        Destroy(parentCube);
+        
         foreach (Cube cube in childrenCubes)
         {
             if (cube.TryGetComponent(out Rigidbody rb))

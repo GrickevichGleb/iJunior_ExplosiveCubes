@@ -10,11 +10,11 @@ public class Cube : MonoBehaviour
 {
     private const float ChildScale = 0.5f;
     
-    public float CubesSpawnChance => _cubesSpawnChance;
-    
     [Range(0f, 1f)]
     [SerializeField] private float _cubesSpawnChance;
     
+    public float CubesSpawnChance => _cubesSpawnChance;
+
     public void Initialize(Cube parentCube)
     {
         _cubesSpawnChance = parentCube.CubesSpawnChance * ChildScale;
