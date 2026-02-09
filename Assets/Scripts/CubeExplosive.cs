@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -7,73 +8,76 @@ using UnityEngine.SocialPlatforms;
 
 public class CubeExplosive : MonoBehaviour
 {
-    [SerializeField] private GameObject _cubePrefab;
+    private const float ChildScale = 0.5f;
+    
+    [SerializeField] private CubeExplosive _cubePrefab;
     [Space]
     [Range(0f, 1f)]
     [SerializeField] private float _cubesSpawnChance;
     [SerializeField] private int _minSpawnCubes;
     [SerializeField] private int _maxSpawnCudes;
 
-    private float _childScale = 0.5f;
-    private void Start()
-    {
-        
-    }
+    private float _explosionPower = 220f;
+    private float _explosionRadius = 5f;
+    private float _explosionUpwardsModif = 0.8f;
     
-    private void Update()
-    {
-        
-    }
-
     public void Initialize(float cubesSpawnChance, int minSpawnCubes, int maxSpawnCubes)
     {
-        _cubesSpawnChance = cubesSpawnChance;
         _minSpawnCubes = minSpawnCubes;
         _maxSpawnCudes = maxSpawnCubes;
+        
+        _cubesSpawnChance = cubesSpawnChance * ChildScale;
+        gameObject.transform.localScale *= ChildScale;
+
+        if (gameObject.TryGetComponent(out MeshRenderer meshRenderer))
+        {
+            meshRenderer.material.color = UtilsRandom.GetRandomColor();
+        }
     }
 
     public void Explode()
     {
-        if (UserUtils.CheckChance(_cubesSpawnChance))
-        {
+        if (UtilsRandom.CheckChance(_cubesSpawnChance))
             ExplodeCube();
-            Debug.Log($"{gameObject.name} exploded");
-        }
+        else
+            Destroy(gameObject);
     }
 
     private void ExplodeCube()
     {
         SpawnCubes();
-        
-        Destroy(gameObject);
- 
         ApplyExplosion();
     }
 
     private void SpawnCubes()
     {
-        int cubesToSpawn = UserUtils.GetRandomNumber(_minSpawnCubes, _maxSpawnCudes);
+        int cubesToSpawn = UtilsRandom.GetRandomNumber(_minSpawnCubes, _maxSpawnCudes);
         Vector3[] spawnPositions = GetSpawnPositions();
         
         for (int i = 0; i < cubesToSpawn; i++)
         {
-            GameObject childCube = Instantiate(_cubePrefab, spawnPositions[i], Quaternion.identity);
-            childCube.transform.localScale = transform.localScale * _childScale;
-            childCube.GetComponent<CubeExplosive>().
-                Initialize
-                    (_cubesSpawnChance * _childScale, _minSpawnCubes, _maxSpawnCudes);
+            CubeExplosive childCube = Instantiate(_cubePrefab, spawnPositions[i], Quaternion.identity);
+            childCube.Initialize(_cubesSpawnChance, _minSpawnCubes, _maxSpawnCudes);
         }
+        
+        Destroy(gameObject);
     }
 
     private void ApplyExplosion()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 4);
+        Vector3 explosionPosition = transform.position - (Vector3.up * (transform.localScale.x * ChildScale));
+        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius);
 
         foreach (Collider collider in colliders)
         {
             if (collider.TryGetComponent(out Rigidbody rb))
             {
-                rb.AddExplosionForce(120f, transform.position, 4f, 1f, ForceMode.Force);
+                rb.AddExplosionForce(
+                    _explosionPower, 
+                    explosionPosition, 
+                    _explosionRadius, 
+                    _explosionUpwardsModif, 
+                    ForceMode.Force);
             }
         }
     }
@@ -82,13 +86,14 @@ public class CubeExplosive : MonoBehaviour
     {
         Vector3[] positions = new Vector3 [6];
         Vector3 position = transform.position;
+        float parentScale = transform.localScale.x;
         
-        positions[0] = position + (Vector3.left * 0.55f);
-        positions[1] = position + (Vector3.right * 0.55f);
-        positions[2] = position + (Vector3.forward * 0.55f);
-        positions[3] = position + (Vector3.back * 0.55f);
-        positions[4] = position + (Vector3.up * 0.55f);
-        positions[5] = position + (Vector3.down * 0.55f);
+        positions[0] = position + (Vector3.left * (ChildScale * parentScale));
+        positions[1] = position + (Vector3.right * (ChildScale * parentScale));
+        positions[2] = position + (Vector3.forward * (ChildScale * parentScale));
+        positions[3] = position + (Vector3.back * (ChildScale * parentScale));
+        positions[4] = position + (Vector3.up * (ChildScale * parentScale));
+        positions[5] = position + (Vector3.down * (ChildScale * parentScale));
 
         return positions;
     }

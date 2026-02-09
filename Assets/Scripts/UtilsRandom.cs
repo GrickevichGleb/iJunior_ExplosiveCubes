@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class UserUtils
+public static class UtilsRandom
 {
     static private System.Random s_random = new System.Random();
 
@@ -17,5 +18,14 @@ public static class UserUtils
     static public int GetRandomNumber(int min, int max)
     {
         return s_random.Next(min, max + 1);
+    }
+
+    static public Color GetRandomColor()
+    {
+        float r = Convert.ToSingle(s_random.NextDouble());
+        float g = Convert.ToSingle(s_random.NextDouble());
+        float b = Convert.ToSingle(s_random.NextDouble());
+        
+        return new Color(r, g, b);
     }
 }
