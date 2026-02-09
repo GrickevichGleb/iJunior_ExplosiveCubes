@@ -31,4 +31,29 @@ public class CubeExploder : MonoBehaviour
             }
         }
     }
+
+    public void CreateExplosion(GameObject cubeObject)
+    {
+        Transform objectTransform = cubeObject.transform;
+        Vector3 explosionPosition =
+            objectTransform.position - (Vector3.up * (objectTransform.localScale.x * DefaultSideBias));
+        float explosionScale = 1f / objectTransform.localScale.x;
+        
+        Destroy(cubeObject);
+        
+        Collider[] colliders = Physics.OverlapSphere(explosionPosition, _explosionRadius  * explosionScale);
+
+        foreach (Collider collider in colliders)
+        {
+            if (collider.TryGetComponent(out Rigidbody rb))
+            {
+                rb.AddExplosionForce(
+                    _explosionPower * explosionScale, 
+                    explosionPosition, 
+                    _explosionRadius * explosionScale, 
+                    _explosionUpwardsModif, 
+                    ForceMode.Force);
+            }
+        }
+    }
 }

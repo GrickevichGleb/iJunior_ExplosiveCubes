@@ -23,6 +23,10 @@ public class CubeClickHandler : MonoBehaviour
         {
             _cubeExploder.ApplyExplosion(cube.gameObject, childCubes);
         }
+        else
+        {
+            _cubeExploder.CreateExplosion(cube.gameObject);
+        }
     }
     
     private void OnDisable()
