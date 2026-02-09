@@ -18,7 +18,7 @@ public class Cube : MonoBehaviour
     public void Initialize(Cube parentCube)
     {
         _cubesSpawnChance = parentCube.CubesSpawnChance * ChildScale;
-        gameObject.transform.localScale *= ChildScale;
+        gameObject.transform.localScale = parentCube.transform.localScale * ChildScale;
 
         if (gameObject.TryGetComponent(out MeshRenderer meshRenderer))
         {
